@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DisasterID — Community Disaster Aid</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: #f5f4f0; color: #1a1a1a; min-height: 100vh; }
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+.nav { background: #1a1a1a; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+.nav-logo { font-family: 'DM Mono', monospace; font-size: 15px; color: #fff; letter-spacing: -0.5px; }
+.nav-logo span { color: #ff5a3c; }
+.nav-tabs { display: flex; gap: 2px; }
+.nav-tab { background: transparent; border: none; color: #888; font-size: 13px; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+.nav-tab:hover { color: #fff; background: #2a2a2a; }
+.nav-tab.active { color: #fff; background: #2d2d2d; }
+.nav-badge { background: #ff5a3c; color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 10px; margin-left: 5px; font-weight: 600; }
+.page { flex: 1; padding: 32px 24px; max-width: 900px; margin: 0 auto; width: 100%; }
+.card { background: #fff; border: 0.5px solid #e0ddd5; border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+.card-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 16px; letter-spacing: 0.2px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+label { font-size: 12px; color: #666; font-weight: 500; letter-spacing: 0.3px; text-transform: uppercase; }
+input, select, textarea { background: #f9f8f5; border: 0.5px solid #d8d5cc; border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: #1a1a1a; outline: none; transition: border-color 0.15s; width: 100%; }
+input:focus, select:focus, textarea:focus { border-color: #ff5a3c; }
+textarea { resize: vertical; min-height: 80px; }
+.checkbox-group { display: flex; flex-direction: column; gap: 8px; }
+.checkbox-item { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.checkbox-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: #ff5a3c; }
+.checkbox-item span { font-size: 13px; color: #444; }
+.btn { border: none; border-radius: 8px; padding: 10px 20px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+.btn-primary { background: #ff5a3c; color: #fff; }
+.btn-primary:hover { background: #e04d32; }
+.btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+.btn-secondary { background: #1a1a1a; color: #fff; }
+.btn-secondary:hover { background: #333; }
+.btn-outline { background: transparent; border: 0.5px solid #d8d5cc; color: #444; }
+.btn-outline:hover { background: #f5f4f0; }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-danger { background: #fee2e2; color: #991b1b; }
+.btn-success { background: #d1fae5; color: #065f46; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; }
+.badge-red { background: #fee2e2; color: #991b1b; }
+.badge-amber { background: #fef3c7; color: #92400e; }
+.badge-green { background: #d1fae5; color: #065f46; }
+.badge-blue { background: #dbeafe; color: #1e40af; }
+.badge-gray { background: #f3f4f6; color: #374151; }
+.map-container { background: #eef0e8; border-radius: 12px; height: 260px; position: relative; overflow: hidden; border: 0.5px solid #d8d5cc; }
+.map-bg { width: 100%; height: 100%; position: absolute; }
+.map-pin { position: absolute; cursor: pointer; transform: translate(-50%, -100%); transition: transform 0.15s; }
+.map-pin:hover { transform: translate(-50%, -100%) scale(1.15); }
+.pin-dot { width: 28px; height: 28px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+.pin-dot-inner { transform: rotate(45deg); font-size: 11px; }
+.pin-red .pin-dot { background: #ef4444; }
+.pin-amber .pin-dot { background: #f59e0b; }
+.pin-green .pin-dot { background: #22c55e; }
+.pin-blue .pin-dot { background: #3b82f6; }
+.request-card { background: #fff; border: 0.5px solid #e0ddd5; border-radius: 10px; padding: 16px; display: flex; gap: 14px; align-items: flex-start; margin-bottom: 12px; transition: box-shadow 0.15s; }
+.request-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+.request-card.claimed { opacity: 0.65; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+.avatar-red { background: #fee2e2; color: #991b1b; }
+.avatar-amber { background: #fef3c7; color: #92400e; }
+.avatar-blue { background: #dbeafe; color: #1e40af; }
+.avatar-green { background: #d1fae5; color: #065f46; }
+.request-info { flex: 1; }
+.request-name { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.request-detail { font-size: 12px; color: #666; margin-bottom: 6px; }
+.request-needs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.need-pill { background: #f5f4f0; color: #555; font-size: 11px; padding: 3px 8px; border-radius: 20px; border: 0.5px solid #e0ddd5; }
+.request-actions { display: flex; gap: 6px; align-items: center; }
+.care-card { background: #fff; border: 1px solid #e0ddd5; border-radius: 12px; overflow: hidden; }
+.care-card-header { padding: 16px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 0.5px solid #e0ddd5; }
+.care-card-urgency { width: 6px; border-radius: 3px; align-self: stretch; flex-shrink: 0; }
+.urgency-critical { background: #ef4444; }
+.urgency-high { background: #f59e0b; }
+.urgency-normal { background: #22c55e; }
+.care-card-body { padding: 16px 20px; }
+.care-section { margin-bottom: 14px; }
+.care-section-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #999; margin-bottom: 6px; }
+.care-section-content { font-size: 13px; color: #333; line-height: 1.5; }
+.action-item { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 5px; }
+.action-num { background: #ff5a3c; color: #fff; font-size: 10px; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.loading { display: flex; align-items: center; gap: 10px; padding: 16px; color: #888; font-size: 13px; }
+.spinner { width: 16px; height: 16px; border: 2px solid #e0ddd5; border-top-color: #ff5a3c; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.section-title { font-size: 20px; font-weight: 600; color: #1a1a1a; }
+.section-sub { font-size: 13px; color: #888; margin-top: 2px; }
+.safe-banner { background: #d1fae5; border: 0.5px solid #6ee7b7; border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.safe-text { font-size: 13px; color: #065f46; font-weight: 500; }
+.profile-summary { background: #1a1a1a; border-radius: 12px; padding: 20px; color: #fff; margin-bottom: 20px; }
+.profile-name { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.profile-address { font-size: 13px; color: #999; margin-bottom: 14px; }
+.profile-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.profile-chip { background: #2a2a2a; color: #ccc; font-size: 11px; padding: 4px 10px; border-radius: 20px; }
+.profile-chip.critical { background: #7f1d1d; color: #fca5a5; }
+.tabs { display: flex; gap: 4px; background: #f0ede8; border-radius: 10px; padding: 4px; margin-bottom: 24px; }
+.tab { flex: 1; padding: 8px; font-size: 13px; font-weight: 500; border: none; background: transparent; border-radius: 7px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: #666; transition: all 0.15s; }
+.tab.active { background: #fff; color: #1a1a1a; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.45); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.overlay-card { background: #fff; border-radius: 14px; width: 100%; max-width: 520px; max-height: 85vh; overflow-y: auto; }
+.step-indicator { display: flex; gap: 8px; margin-bottom: 24px; }
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: #e0ddd5; transition: background 0.2s; }
+.step-dot.active { background: #ff5a3c; }
+.step-dot.done { background: #1a1a1a; }
+.sos-btn { background: #ef4444; color: #fff; border: none; border-radius: 12px; padding: 18px; width: 100%; font-size: 16px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; letter-spacing: 0.3px; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.sos-btn:hover { background: #dc2626; }
+.sos-btn:active { transform: scale(0.98); }
+.sos-pulse { width: 12px; height: 12px; background: #fff; border-radius: 50%; animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+.qr-block { background: #f9f8f5; border: 0.5px solid #e0ddd5; border-radius: 8px; padding: 12px; text-align: center; }
+.qr-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; width: 70px; margin: 0 auto 8px; }
+.qr-cell { aspect-ratio: 1; border-radius: 1px; }
+.divider { border: none; border-top: 0.5px solid #e0ddd5; margin: 16px 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const DISASTER_TYPES = ["Hurricane","Flood","Earthquake","Wildfire","Tornado","Power Outage","Winter Storm"];
+const DEVICES = ["Ventilator","Oxygen concentrator","Power wheelchair","CPAP/BiPAP","Insulin pump","Infusion pump","Home dialysis","Refrigerated medication","Hearing aids","Communication device"];
+const MOBILITY = ["Fully mobile","Uses wheelchair","Uses walker/cane","Non-ambulatory","Requires assistance"];
+const COMM = ["Standard","Deaf/Hard of hearing","Non-verbal","Vision impaired","Cognitive disability"];
+const NEEDS_ICONS = { "Power source": "⚡", "Medication pickup": "💊", "Evacuation help": "🚗", "Check-in only": "✅", "Medical supplies": "🩺", "Food/Water": "💧" };
+
+const syntheticProfiles = [
+  { id:1, name:"Margaret Chen", address:"2847 Oak Ln", initials:"MC", color:"red", lat:52, lng:28, devices:["Ventilator","Refrigerated medication"], mobility:"Non-ambulatory", comm:"Standard", emergencyContact:"David Chen - 612-555-0112", status:"uncontacted", need:"Power source", urgency:"critical", requestTime:"10 min ago" },
+  { id:2, name:"James Okafor", address:"1103 Pine Ave", initials:"JO", color:"amber", lat:60, lng:55, devices:["Power wheelchair","CPAP/BiPAP"], mobility:"Uses wheelchair", comm:"Standard", emergencyContact:"Lynn Okafor - 612-555-0198", status:"uncontacted", need:"Evacuation help", urgency:"high", requestTime:"23 min ago" },
+  { id:3, name:"Rosa Martinez", address:"509 Elm St", initials:"RM", color:"amber", lat:38, lng:72, devices:["Hearing aids"], mobility:"Fully mobile", comm:"Deaf/Hard of hearing", emergencyContact:"Carlos Martinez - 612-555-0143", status:"claimed", need:"Check-in only", urgency:"normal", requestTime:"35 min ago" },
+  { id:4, name:"Thomas Wu", address:"1722 Maple Dr", initials:"TW", color:"blue", lat:70, lng:40, devices:["Home dialysis","Refrigerated medication"], mobility:"Uses walker/cane", comm:"Standard", emergencyContact:"Susan Wu - 612-555-0177", status:"uncontacted", need:"Medical supplies", urgency:"high", requestTime:"8 min ago" },
+];
+
+function QRMock() {
+  const pattern = [1,0,1,1,0,1,0,0,1,0,0,1,0,1,1,0,1,0,1,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,1,1,0,0,1,1,1,0,0,1,0,0,0,1,1];
+  return (
+    <div className="qr-block">
+      <div className="qr-grid">
+        {pattern.map((c,i) => <div key={i} className="qr-cell" style={{background: c ? '#1a1a1a' : '#f9f8f5'}} />)}
+      </div>
+      <div style={{fontSize:10,color:'#999'}}>Scan for full profile</div>
+    </div>
+  );
+}
+
+function UrgencyBadge({level}) {
+  const map = { critical: ["badge-red","Critical"], high: ["badge-amber","High Priority"], normal: ["badge-green","Normal"] };
+  const [cls, label] = map[level] || ["badge-gray","Unknown"];
+  return <span className={`badge ${cls}`}>{label}</span>;
+}
+
+function CareCard({profile, disasterType, onClose}) {
+  const [loading, setLoading] = useState(true);
+  const [card, setCard] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function generate() {
+      try {
+        const prompt = `You are an emergency care card generator. Generate a structured care brief for a first responder.
+
+Person: ${profile.name}
+Address: ${profile.address}
+Medical devices: ${profile.devices?.join(", ") || "None"}
+Mobility: ${profile.mobility}
+Communication: ${profile.comm}
+Emergency contact: ${profile.emergencyContact}
+Current need: ${profile.need}
+Disaster type: ${disasterType}
+
+Respond ONLY with a JSON object (no markdown, no backticks):
+{
+  "urgencyLevel": "critical|high|normal",
+  "powerDeadline": "string or null (e.g. '2 hours' if power-dependent)",
+  "topActions": ["action 1", "action 2", "action 3"],
+  "communicationTip": "one sentence on how to communicate with this person",
+  "whatToBring": ["item1", "item2"],
+  "safetyNote": "one short safety note for responder"
+}`;
+
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 600,
+            messages: [{ role: "user", content: prompt }]
+          })
+        });
+        const data = await res.json();
+        const text = data.content?.map(b => b.text || "").join("") || "";
+        const clean = text.replace(/```json|```/g,"").trim();
+        setCard(JSON.parse(clean));
+      } catch(e) {
+        setError("Could not generate care card. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    generate();
+  }, []);
+
+  const urgencyColor = { critical:"urgency-critical", high:"urgency-high", normal:"urgency-normal" };
+
+  return (
+    <div className="overlay" onClick={e => e.target===e.currentTarget && onClose()}>
+      <div className="overlay-card">
+        <div className="care-card">
+          <div className="care-card-header">
+            <div className={`care-card-urgency ${card ? urgencyColor[card.urgencyLevel] : 'urgency-normal'}`} />
+            <div style={{flex:1}}>
+              <div style={{fontSize:16,fontWeight:600}}>{profile.name}</div>
+              <div style={{fontSize:12,color:'#888'}}>{profile.address} · {disasterType}</div>
+            </div>
+            {card && <UrgencyBadge level={card.urgencyLevel} />}
+          </div>
+          <div className="care-card-body">
+            {loading && <div className="loading"><div className="spinner" /> Generating AI care brief...</div>}
+            {error && <div style={{color:'#991b1b',fontSize:13,padding:8}}>{error}</div>}
+            {card && <>
+              {card.powerDeadline && (
+                <div style={{background:'#fee2e2',border:'0.5px solid #fca5a5',borderRadius:8,padding:'10px 14px',marginBottom:14}}>
+                  <div style={{fontSize:11,fontWeight:700,color:'#991b1b',textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:3}}>⚡ Power deadline</div>
+                  <div style={{fontSize:14,color:'#7f1d1d',fontWeight:600}}>Needs power within {card.powerDeadline}</div>
+                </div>
+              )}
+              <div className="care-section">
+                <div className="care-section-label">Immediate actions</div>
+                {card.topActions?.map((a,i) => (
+                  <div key={i} className="action-item">
+                    <div className="action-num">{i+1}</div>
+                    <div className="care-section-content">{a}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="divider" />
+              <div className="care-section">
+                <div className="care-section-label">Communication</div>
+                <div className="care-section-content">{card.communicationTip}</div>
+              </div>
+              <div className="care-section">
+                <div className="care-section-label">What to bring</div>
+                <div style={{display:'flex',flexWrap:'wrap',gap:4}}>
+                  {card.whatToBring?.map((w,i) => <span key={i} className="need-pill">{w}</span>)}
+                </div>
+              </div>
+              {card.safetyNote && <>
+                <div className="divider" />
+                <div className="care-section">
+                  <div className="care-section-label">Responder note</div>
+                  <div className="care-section-content" style={{color:'#666'}}>{card.safetyNote}</div>
+                </div>
+              </>}
+              <div className="divider" />
+              <div style={{display:'flex',gap:8,alignItems:'center'}}>
+                <div style={{flex:1,fontSize:11,color:'#999'}}>Emergency contact: {profile.emergencyContact}</div>
+                <QRMock />
+              </div>
+            </>}
+          </div>
+        </div>
+        <div style={{padding:'12px 20px',borderTop:'0.5px solid #e0ddd5',display:'flex',gap:8}}>
+          <button className="btn btn-outline btn-sm" onClick={onClose}>Close</button>
+          <button className="btn btn-sm" style={{background:'#1a1a1a',color:'#fff'}} onClick={() => window.print()}>Print card</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MapView({profiles, onSelect}) {
+  const colorMap = { critical:'pin-red', high:'pin-amber', normal:'pin-green' };
+  return (
+    <div className="map-container">
+      <svg className="map-bg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="260" fill="#e8ead8"/>
+        <rect x="0" y="80" width="400" height="2" fill="#d4d6c4" opacity="0.6"/>
+        <rect x="0" y="160" width="400" height="2" fill="#d4d6c4" opacity="0.6"/>
+        <rect x="100" y="0" width="2" height="260" fill="#d4d6c4" opacity="0.6"/>
+        <rect x="200" y="0" width="2" height="260" fill="#d4d6c4" opacity="0.6"/>
+        <rect x="300" y="0" width="2" height="260" fill="#d4d6c4" opacity="0.6"/>
+        <rect x="20" y="95" width="60" height="25" rx="2" fill="#cfd1be" opacity="0.7"/>
+        <rect x="130" y="30" width="45" height="30" rx="2" fill="#cfd1be" opacity="0.7"/>
+        <rect x="220" y="120" width="70" height="20" rx="2" fill="#cfd1be" opacity="0.7"/>
+        <rect x="310" y="60" width="50" height="35" rx="2" fill="#cfd1be" opacity="0.7"/>
+        <text x="8" y="254" fill="#b0b29e" fontSize="9" fontFamily="monospace">Disaster Zone Alpha</text>
+      </svg>
+      {profiles.map(p => (
+        <div key={p.id} className={`map-pin ${colorMap[p.urgency]}`}
+          style={{left:`${p.lng}%`, top:`${p.lat}%`}}
+          onClick={() => onSelect(p)}
+          title={p.name}>
+          <div className="pin-dot">
+            <div className="pin-dot-inner" style={{color:'#fff',fontWeight:700}}>{p.initials}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function VolunteerView() {
+  const [profiles, setProfiles] = useState(syntheticProfiles);
+  const [selectedProfile, setSelectedProfile] = useState(null);
+  const [disasterType, setDisasterType] = useState("Hurricane");
+  const [showCard, setShowCard] = useState(false);
+  const [filter, setFilter] = useState("all");
+
+  const claim = (id) => setProfiles(p => p.map(x => x.id===id ? {...x, status:'claimed'} : x));
+  const resolve = (id) => setProfiles(p => p.map(x => x.id===id ? {...x, status:'resolved'} : x));
+
+  const filtered = profiles.filter(p => filter==="all" || p.status===filter || (filter==="active" && p.status!=="resolved"));
+  const unclaimed = profiles.filter(p => p.status==="uncontacted").length;
+
+  return (
+    <div className="page">
+      <div className="section-header">
+        <div>
+          <div className="section-title">Responder Dashboard</div>
+          <div className="section-sub">{unclaimed} people awaiting help</div>
+        </div>
+        <select value={disasterType} onChange={e=>setDisasterType(e.target.value)} style={{width:'auto',padding:'6px 10px'}}>
+          {DISASTER_TYPES.map(d => <option key={d}>{d}</option>)}
+        </select>
+      </div>
+      <div className="card" style={{padding:16,marginBottom:16}}>
+        <MapView profiles={profiles} onSelect={p=>{setSelectedProfile(p);setShowCard(true);}} />
+        <div style={{display:'flex',gap:12,marginTop:12,fontSize:11,color:'#888'}}>
+          <span><span style={{color:'#ef4444',fontWeight:700}}>●</span> Critical</span>
+          <span><span style={{color:'#f59e0b',fontWeight:700}}>●</span> High priority</span>
+          <span><span style={{color:'#22c55e',fontWeight:700}}>●</span> Normal</span>
+        </div>
+      </div>
+      <div className="tabs">
+        {[["all","All"],["active","Active"],["uncontacted","Unclaimed"],["claimed","Claimed"],["resolved","Resolved"]].map(([v,l]) => (
+          <button key={v} className={`tab ${filter===v?'active':''}`} onClick={()=>setFilter(v)}>{l}</button>
+        ))}
+      </div>
+      {filtered.sort((a,b) => ({critical:0,high:1,normal:2}[a.urgency]||3) - ({critical:0,high:1,normal:2}[b.urgency]||3)).map(p => (
+        <div key={p.id} className={`request-card ${p.status==='resolved'?'claimed':''}`}>
+          <div className={`avatar avatar-${p.color}`}>{p.initials}</div>
+          <div className="request-info">
+            <div style={{display:'flex',gap:8,alignItems:'center',marginBottom:4}}>
+              <div className="request-name">{p.name}</div>
+              <UrgencyBadge level={p.urgency} />
+            </div>
+            <div className="request-detail">{p.address} · {p.requestTime}</div>
+            <div className="request-needs">
+              <span className="need-pill">{NEEDS_ICONS[p.need]} {p.need}</span>
+              {p.devices?.slice(0,2).map(d => <span key={d} className="need-pill">{d}</span>)}
+              {p.comm !== "Standard" && <span className="need-pill">{p.comm}</span>}
+            </div>
+            <div className="request-actions">
+              {p.status!=="resolved" && <>
+                <button className="btn btn-sm btn-secondary" onClick={()=>{setSelectedProfile(p);setShowCard(true);}}>View AI Care Card</button>
+                {p.status==="uncontacted" && <button className="btn btn-sm btn-outline" onClick={()=>claim(p.id)}>Claim</button>}
+                {p.status==="claimed" && <button className="btn btn-sm btn-success" onClick={()=>resolve(p.id)}>Mark Resolved</button>}
+              </>}
+              {p.status==="resolved" && <span className="badge badge-green">✓ Resolved</span>}
+            </div>
+          </div>
+        </div>
+      ))}
+      {showCard && selectedProfile && (
+        <CareCard profile={selectedProfile} disasterType={disasterType} onClose={()=>setShowCard(false)} />
+      )}
+    </div>
+  );
+}
+
+function RegisterView({onRegistered}) {
+  const [step, setStep] = useState(0);
+  const [form, setForm] = useState({ name:'', address:'', phone:'', emergencyContact:'', emergencyPhone:'', devices:[], mobility:'Fully mobile', comm:'Standard', medications:'', notes:'' });
+  const [submitted, setSubmitted] = useState(false);
+
+  const set = (k,v) => setForm(f => ({...f,[k]:v}));
+  const toggleDevice = (d) => set('devices', form.devices.includes(d) ? form.devices.filter(x=>x!==d) : [...form.devices, d]);
+
+  const steps = [
+    { title: "Personal info", content: (
+      <div className="form-grid">
+        <div className="form-group full"><label>Full name</label><input value={form.name} onChange={e=>set('name',e.target.value)} placeholder="Margaret Chen"/></div>
+        <div className="form-group full"><label>Home address</label><input value={form.address} onChange={e=>set('address',e.target.value)} placeholder="2847 Oak Lane, Minneapolis MN"/></div>
+        <div className="form-group"><label>Phone</label><input value={form.phone} onChange={e=>set('phone',e.target.value)} placeholder="612-555-0100"/></div>
+        <div className="form-group"><label>Emergency contact</label><input value={form.emergencyContact} onChange={e=>set('emergencyContact',e.target.value)} placeholder="Name & phone"/></div>
+      </div>
+    )},
+    { title: "Medical devices", content: (
+      <div className="checkbox-group">
+        {DEVICES.map(d => (
+          <label key={d} className="checkbox-item">
+            <input type="checkbox" checked={form.devices.includes(d)} onChange={()=>toggleDevice(d)}/>
+            <span>{d}</span>
+          </label>
+        ))}
+      </div>
+    )},
+    { title: "Mobility & communication", content: (
+      <div className="form-grid">
+        <div className="form-group full"><label>Mobility level</label>
+          <select value={form.mobility} onChange={e=>set('mobility',e.target.value)}>
+            {MOBILITY.map(m=><option key={m}>{m}</option>)}
+          </select>
+        </div>
+        <div className="form-group full"><label>Communication needs</label>
+          <select value={form.comm} onChange={e=>set('comm',e.target.value)}>
+            {COMM.map(c=><option key={c}>{c}</option>)}
+          </select>
+        </div>
+        <div className="form-group full"><label>Medications & special needs</label>
+          <textarea value={form.medications} onChange={e=>set('medications',e.target.value)} placeholder="List any medications, allergies, or special care instructions..."/>
+        </div>
+        <div className="form-group full"><label>Additional notes for responders</label>
+          <textarea value={form.notes} onChange={e=>set('notes',e.target.value)} placeholder="Anything else responders should know..."/>
+        </div>
+      </div>
+    )}
+  ];
+
+  if(submitted) {
+    return (
+      <div className="page">
+        <div style={{textAlign:'center',padding:'40px 0'}}>
+          <div style={{fontSize:48,marginBottom:16}}>✓</div>
+          <div style={{fontSize:22,fontWeight:600,marginBottom:8}}>You're registered, {form.name.split(' ')[0]}!</div>
+          <div style={{fontSize:14,color:'#888',marginBottom:32}}>Your care card has been created and you're now on the community network.</div>
+        </div>
+        <div className="profile-summary">
+          <div className="profile-name">{form.name}</div>
+          <div className="profile-address">{form.address}</div>
+          <div className="profile-chips">
+            {form.devices.map(d => <span key={d} className={`profile-chip ${['Ventilator','Oxygen concentrator','Home dialysis'].includes(d)?'critical':''}`}>{d}</span>)}
+            <span className="profile-chip">{form.mobility}</span>
+            <span className="profile-chip">{form.comm}</span>
+          </div>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:20}}>
+          <div className="card" style={{textAlign:'center',padding:16}}>
+            <QRMock />
+            <div style={{fontSize:12,color:'#888',marginTop:8}}>Your QR card</div>
+            <button className="btn btn-outline btn-sm" style={{marginTop:8,width:'100%'}} onClick={()=>window.print()}>Print physical card</button>
+          </div>
+          <div className="card" style={{padding:16}}>
+            <div style={{fontSize:12,color:'#888',marginBottom:8}}>During a disaster</div>
+            <div style={{fontSize:13,color:'#333',marginBottom:16,lineHeight:1.5}}>Tap the button below to request help. Your care card is automatically shared with nearby volunteers.</div>
+            <button className="sos-btn" style={{fontSize:13,padding:12}} onClick={()=>onRegistered(form)}>
+              <div className="sos-pulse"/>
+              Request help now
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page">
+      <div className="section-header">
+        <div>
+          <div className="section-title">Create your care profile</div>
+          <div className="section-sub">Takes 2 minutes · Used by responders during emergencies</div>
+        </div>
+      </div>
+      <div className="step-indicator">
+        {steps.map((_,i) => <div key={i} className={`step-dot ${i<step?'done':i===step?'active':''}`}/>)}
+      </div>
+      <div className="card">
+        <div className="card-title">{steps[step].title}</div>
+        {steps[step].content}
+      </div>
+      <div style={{display:'flex',gap:8,justifyContent:'space-between'}}>
+        {step>0 ? <button className="btn btn-outline" onClick={()=>setStep(s=>s-1)}>Back</button> : <div/>}
+        {step < steps.length-1
+          ? <button className="btn btn-primary" onClick={()=>setStep(s=>s+1)} disabled={step===0 && !form.name}>Continue</button>
+          : <button className="btn btn-primary" onClick={()=>setSubmitted(true)} disabled={!form.name || !form.address}>Register & create care card</button>
+        }
+      </div>
+    </div>
+  );
+}
+
+function MyProfileView({registeredProfile}) {
+  const [safeStatus, setSafeStatus] = useState(false);
+  const [activeRequest, setActiveRequest] = useState(null);
+  const [showRequestForm, setShowRequestForm] = useState(false);
+  const [selectedNeed, setSelectedNeed] = useState(null);
+
+  const submitRequest = () => { setActiveRequest(selectedNeed); setShowRequestForm(false); };
+
+  return (
+    <div className="page">
+      <div style={{marginBottom:20}}>
+        <div className="section-title" style={{marginBottom:4}}>My profile</div>
+        <div className="section-sub">Your care card is active and visible to responders</div>
+      </div>
+      {safeStatus && (
+        <div className="safe-banner">
+          <div style={{fontSize:20}}>✓</div>
+          <div>
+            <div className="safe-text">You've marked yourself as safe</div>
+            <div style={{fontSize:11,color:'#6ee7b7',marginTop:2}}>Your family has been notified · Removed from urgent queue</div>
+          </div>
+          <button className="btn btn-sm" style={{marginLeft:'auto',background:'#065f46',color:'#fff',fontSize:11}} onClick={()=>setSafeStatus(false)}>Undo</button>
+        </div>
+      )}
+      {activeRequest && (
+        <div style={{background:'#fef3c7',border:'0.5px solid #fbbf24',borderRadius:10,padding:'14px 18px',marginBottom:16}}>
+          <div style={{fontSize:12,fontWeight:600,color:'#92400e',marginBottom:4}}>Request active · Visible to volunteers nearby</div>
+          <div style={{fontSize:13,color:'#78350f'}}>Need: {NEEDS_ICONS[activeRequest]} {activeRequest}</div>
+          <button className="btn btn-sm btn-outline" style={{marginTop:8,fontSize:11}} onClick={()=>setActiveRequest(null)}>Cancel request</button>
+        </div>
+      )}
+      <div className="profile-summary">
+        <div className="profile-name">{registeredProfile?.name || "Margaret Chen"}</div>
+        <div className="profile-address">{registeredProfile?.address || "2847 Oak Lane, Minneapolis MN"}</div>
+        <div className="profile-chips">
+          {(registeredProfile?.devices || ["Ventilator","Refrigerated medication"]).map(d => (
+            <span key={d} className={`profile-chip ${['Ventilator','Oxygen concentrator','Home dialysis'].includes(d)?'critical':''}`}>{d}</span>
+          ))}
+          <span className="profile-chip">{registeredProfile?.mobility || "Non-ambulatory"}</span>
+          <span className="profile-chip">{registeredProfile?.comm || "Standard"}</span>
+        </div>
+      </div>
+      {!activeRequest && !safeStatus && (
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:20}}>
+          <button className="sos-btn" style={{gridColumn:'1/-1'}} onClick={()=>setShowRequestForm(true)}>
+            <div className="sos-pulse"/>
+            I need help
+          </button>
+          <button className="btn btn-outline" style={{fontSize:13,padding:12}} onClick={()=>setSafeStatus(true)}>✓ I'm safe</button>
+          <button className="btn btn-outline" style={{fontSize:13,padding:12}}>Notify family</button>
+        </div>
+      )}
+      {showRequestForm && (
+        <div className="overlay" onClick={e=>e.target===e.currentTarget&&setShowRequestForm(false)}>
+          <div className="overlay-card" style={{padding:24}}>
+            <div style={{fontSize:16,fontWeight:600,marginBottom:4}}>What do you need?</div>
+            <div style={{fontSize:13,color:'#888',marginBottom:16}}>Your care card will be attached automatically</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:16}}>
+              {Object.entries(NEEDS_ICONS).map(([need,icon]) => (
+                <button key={need} onClick={()=>setSelectedNeed(need)}
+                  style={{padding:'12px 8px',borderRadius:8,border:`1px solid ${selectedNeed===need?'#ff5a3c':'#e0ddd5'}`,background:selectedNeed===need?'#fff5f3':'#fff',cursor:'pointer',fontFamily:'DM Sans, sans-serif',fontSize:13,color:selectedNeed===need?'#ff5a3c':'#444',fontWeight:selectedNeed===need?600:400}}>
+                  {icon} {need}
+                </button>
+              ))}
+            </div>
+            <div style={{display:'flex',gap:8}}>
+              <button className="btn btn-outline" style={{flex:1}} onClick={()=>setShowRequestForm(false)}>Cancel</button>
+              <button className="btn btn-primary" style={{flex:1}} disabled={!selectedNeed} onClick={submitRequest}>Send request</button>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="card">
+        <div className="card-title">Your physical card</div>
+        <div style={{display:'flex',gap:16,alignItems:'center'}}>
+          <QRMock />
+          <div style={{flex:1}}>
+            <div style={{fontSize:13,color:'#444',lineHeight:1.6,marginBottom:10}}>Print your care card and keep it in your wallet or on your front door. Responders can scan the QR code to access your full AI-generated care brief.</div>
+            <button className="btn btn-secondary btn-sm" onClick={()=>window.print()}>Print wallet card</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [activeView, setActiveView] = useState('register');
+  const [registeredProfile, setRegisteredProfile] = useState(null);
+  const requestCount = syntheticProfiles.filter(p=>p.status==='uncontacted').length;
+
+  return (
+    <div className="app">
+      <nav className="nav">
+        <div className="nav-logo">Disaster<span>ID</span></div>
+        <div className="nav-tabs">
+          <button className={`nav-tab ${activeView==='register'?'active':''}`} onClick={()=>setActiveView('register')}>Register</button>
+          <button className={`nav-tab ${activeView==='profile'?'active':''}`} onClick={()=>setActiveView('profile')}>My Profile</button>
+          <button className={`nav-tab ${activeView==='responder'?'active':''}`} onClick={()=>setActiveView('responder')}>
+            Respond
+            <span className="nav-badge">{requestCount}</span>
+          </button>
+        </div>
+      </nav>
+      {activeView === 'register' && <RegisterView onRegistered={p=>{setRegisteredProfile(p);setActiveView('profile');}}/>}
+      {activeView === 'profile' && <MyProfileView registeredProfile={registeredProfile}/>}
+      {activeView === 'responder' && <VolunteerView />}
+    </div>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById('root'));
+</script>
+</body>
+</html>
