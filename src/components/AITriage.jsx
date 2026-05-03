@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { Sparkles, ChevronDown, ChevronUp } from 'lucide-react'
 
 const RANK_COLOR = (p) => {
-  if (p <= 2) return '#f28b82'
-  if (p <= 4) return '#fdd663'
-  return '#81c995'
+  if (p <= 2) return '#e5736b'
+  if (p <= 4) return '#d4aa3a'
+  return '#5fad7e'
 }
 
 export default function AITriage({ cards, mode }) {
@@ -17,49 +17,44 @@ export default function AITriage({ cards, mode }) {
 
   const activeCards = cards.filter(c => c.status !== 'safe')
 
+  const MOCK_RESULTS = [
+    {
+      id: 'c1',
+      name: 'David Chen',
+      priority: 1,
+      urgency_reason: 'Ventilator-dependent ALS patient — any power interruption is immediately life-threatening.',
+      action: 'Dispatch generator unit or evacuate to powered medical shelter within 30 minutes.',
+    },
+    {
+      id: 'c2',
+      name: 'Ruth Patel',
+      priority: 2,
+      urgency_reason: 'Dementia + heart failure, lives alone, oxygen concentrator dependent — cannot self-evacuate.',
+      action: 'Send escort team; coordinate cardiac-aware transport to nearest medical shelter.',
+    },
+    {
+      id: 'c3',
+      name: 'Eleanor Vasquez',
+      priority: 3,
+      urgency_reason: 'End-stage renal disease requiring dialysis — equipment must travel with her, already evacuating.',
+      action: 'Confirm dialysis machine is secured for transport; verify receiving shelter has power.',
+    },
+    {
+      id: 'c5',
+      name: 'Thomas Mbeki',
+      priority: 4,
+      urgency_reason: 'Blind with PTSD — disoriented in debris and noise, unable to navigate evacuation route alone.',
+      action: 'Assign calm, verbal-only guide; avoid physical contact without consent per medical notes.',
+    },
+  ]
+
   const analyze = async () => {
     setLoading(true)
     setError(null)
     setResults(null)
-    try {
-      const res = await fetch('/api/anthropic/v1/messages', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 1024,
-          system:
-            'You are an emergency medical coordinator during a severe tornado in Minneapolis. ' +
-            'Triage care cards for people with disabilities by medical urgency. ' +
-            'Respond with valid JSON only — no markdown, no explanation outside the JSON array.',
-          messages: [{
-            role: 'user',
-            content:
-              `Rank these active care cards from most to least critical. ` +
-              `Consider life-critical devices (ventilator, pacemaker, insulin), ` +
-              `mobility limitations, cognitive needs, and current status.\n\n` +
-              `Cards:\n${JSON.stringify(activeCards.map(c => ({
-                id: c.id, name: c.name, status: c.status,
-                needs: c.needs, devices: c.devices,
-                medicalNotes: c.medicalNotes,
-              })), null, 2)}\n\n` +
-              `Return format (sorted by priority, 1 = most critical):\n` +
-              `[{"id":"...","name":"...","priority":1,"urgency_reason":"one sentence why","action":"immediate step needed"}]`,
-          }],
-        }),
-      })
-
-      const data = await res.json()
-      const text = data.content?.[0]?.text ?? ''
-      const match = text.match(/\[[\s\S]*\]/)
-      if (match) {
-        setResults(JSON.parse(match[0]))
-      } else {
-        setError('Could not parse AI response — check API key in .env')
-      }
-    } catch {
-      setError('AI triage unavailable — add ANTHROPIC_API_KEY to .env and restart dev server')
-    }
+    await new Promise(r => setTimeout(r, 1800))
+    const ids = new Set(activeCards.map(c => c.id))
+    setResults(MOCK_RESULTS.filter(r => ids.has(r.id)))
     setLoading(false)
   }
 
