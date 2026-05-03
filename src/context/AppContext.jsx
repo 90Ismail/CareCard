@@ -1,31 +1,30 @@
 import { createContext, useContext, useState } from 'react'
-import { currentUser as initialUser, responderResidents as initialResidents } from '../data/mockData'
+import { initialMyCard, communityCards as initialCards } from '../data/mockData'
 
-const AppContext = createContext(null)
+const Ctx = createContext(null)
 
 export function AppProvider({ children }) {
-  const [user, setUser] = useState(initialUser)
-  const [residents, setResidents] = useState(initialResidents)
+  const [myCard, setMyCard] = useState(initialMyCard)
+  const [cards, setCards] = useState(initialCards)
 
-  const updateStatus = (status) => {
-    const now = new Date().toISOString()
-    setUser(prev => ({ ...prev, status, lastCheckIn: now }))
-    setResidents(prev =>
-      prev.map(r => r.id === 'r1' ? { ...r, status, lastCheckIn: now } : r)
-    )
-  }
+  const updateStatus = (status) => setMyCard(p => ({ ...p, status }))
 
-  const markResident = (id, field) => {
-    setResidents(prev =>
-      prev.map(r => r.id === id ? { ...r, [field]: true } : r)
-    )
-  }
+  const claimCard = (id, claimerName) =>
+    setCards(p => p.map(c =>
+      c.id === id ? { ...c, claimedBy: { name: claimerName, time: new Date().toISOString() } } : c
+    ))
+
+  const unclaimCard = (id) =>
+    setCards(p => p.map(c => c.id === id ? { ...c, claimedBy: null } : c))
+
+  const markReached = (id) =>
+    setCards(p => p.map(c => c.id === id ? { ...c, reached: true } : c))
 
   return (
-    <AppContext.Provider value={{ user, setUser, residents, setResidents, updateStatus, markResident }}>
+    <Ctx.Provider value={{ myCard, setMyCard, updateStatus, cards, claimCard, unclaimCard, markReached }}>
       {children}
-    </AppContext.Provider>
+    </Ctx.Provider>
   )
 }
 
-export const useApp = () => useContext(AppContext)
+export const useApp = () => useContext(Ctx)
