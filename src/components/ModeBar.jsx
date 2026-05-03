@@ -1,9 +1,10 @@
-import { ShieldCheck, User, Shield, Heart } from 'lucide-react'
+import { User, Shield, Heart } from 'lucide-react'
+import { CareCardLogo } from './CareCardBrand'
 
 const STATUS_CFG = {
-  safe:        { label: 'Safe',       dot: '#1e8e3e', text: '#1e8e3e', bg: '#e6f4ea', border: '#a8d5b5' },
-  'need-help': { label: 'Needs Help', dot: '#d93025', text: '#d93025', bg: '#fce8e6', border: '#f5c6c2' },
-  evacuating:  { label: 'Evacuating', dot: '#f29900', text: '#b06000', bg: '#fef7e0', border: '#fde68a' },
+  safe:        { label: 'Safe',       dot: '#81c995', text: '#81c995', bg: '#0d2b1a', border: '#1f4a2d' },
+  'need-help': { label: 'Needs Help', dot: '#f28b82', text: '#f28b82', bg: '#2d1111', border: '#4d2020' },
+  evacuating:  { label: 'Evacuating', dot: '#fdd663', text: '#fdd663', bg: '#2a2008', border: '#4a3a18' },
 }
 
 const TABS = [
@@ -20,9 +21,12 @@ export default function ModeBar({ mode, setMode, userStatus }) {
       <div className="modebar__top">
         <div className="modebar__brand">
           <div className="modebar__icon">
-            <ShieldCheck size={15} strokeWidth={2.5} aria-hidden="true" />
+            <CareCardLogo size={18} color="white" />
           </div>
-          <span className="modebar__name">CareCard</span>
+          <div>
+            <span className="modebar__name" style={{ fontFamily: 'var(--font-display)', letterSpacing: '.03em' }}>CareCard</span>
+            <p style={{ fontSize: 9, fontWeight: 600, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--text-4)', marginTop: 0, lineHeight: 1 }}>Emergency Network</p>
+          </div>
         </div>
 
         {userStatus && (

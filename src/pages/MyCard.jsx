@@ -6,13 +6,14 @@ import {
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { NEEDS } from '../data/mockData'
+import { CareCardLogo, PersonAvatar } from '../components/CareCardBrand'
 
 const ICON_MAP = { Zap, Thermometer, Move, Wind, Eye, Volume2, Activity, HeartPulse }
 
 const STATUS_OPTS = [
-  { id: 'safe',       label: "I'm Safe",   Icon: CheckCircle2, color: '#1e8e3e', bg: '#e6f4ea', cls: 'active-safe'       },
-  { id: 'need-help',  label: 'Need Help',  Icon: AlertOctagon, color: '#d93025', bg: '#fce8e6', cls: 'active-need-help'  },
-  { id: 'evacuating', label: 'Evacuating', Icon: Navigation,   color: '#b06000', bg: '#fef7e0', cls: 'active-evacuating' },
+  { id: 'safe',       label: "I'm Safe",   Icon: CheckCircle2, color: '#81c995', bg: '#0d2b1a', cls: 'active-safe'       },
+  { id: 'need-help',  label: 'Need Help',  Icon: AlertOctagon, color: '#f28b82', bg: '#2d1111', cls: 'active-need-help'  },
+  { id: 'evacuating', label: 'Evacuating', Icon: Navigation,   color: '#fdd663', bg: '#2a2008', cls: 'active-evacuating' },
 ]
 
 const STATUS_LABELS = { safe: 'Safe', 'need-help': 'Needs Help', evacuating: 'Evacuating' }
@@ -23,10 +24,36 @@ function IdCard({ card }) {
 
   return (
     <div className="id-card">
-      <div className={`id-card__accent id-card__accent--${card.status}`} />
+
+      {/* ── Branded header ── */}
+      <div className="id-card__header">
+        <div className="id-card__header-brand">
+          <CareCardLogo size={26} color="white" />
+          <div>
+            <p className="id-card__header-wordmark">CARECARD</p>
+            <p className="id-card__header-sub">Emergency Medical ID</p>
+          </div>
+        </div>
+        <div
+          className={`status-badge status-badge--${card.status}`}
+          aria-label={`Status: ${STATUS_LABELS[card.status]}`}
+        >
+          <div className="status-badge__dot" />
+          {STATUS_LABELS[card.status]}
+        </div>
+      </div>
+
+      {/* ── Body ── */}
       <div className="id-card__body">
-        {/* Name + status */}
+        {/* Avatar + name row */}
         <div className="id-card__name-row">
+          <div className="id-card__avatar-wrap">
+            <PersonAvatar
+              name={card.name || '?'}
+              status={card.status}
+              size={46}
+            />
+          </div>
           <div className="f1">
             {card.name
               ? <p className="id-card__name">{card.name}</p>
@@ -37,13 +64,6 @@ function IdCard({ card }) {
                 {card.address}{card.zone ? ` · Zone ${card.zone}` : ''}
               </p>
             )}
-          </div>
-          <div
-            className={`status-badge status-badge--${card.status}`}
-            aria-label={`Status: ${STATUS_LABELS[card.status]}`}
-          >
-            <div className="status-badge__dot" />
-            {STATUS_LABELS[card.status]}
           </div>
         </div>
 
@@ -58,16 +78,13 @@ function IdCard({ card }) {
                 if (!n) return null
                 const Icon = ICON_MAP[n.icon]
                 return (
-                  <span
-                    key={id}
-                    style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 4,
-                      padding: '4px 10px', borderRadius: 9999,
-                      fontSize: 12, fontWeight: 500,
-                      background: n.bg, color: n.color,
-                      border: `1px solid ${n.color}30`,
-                    }}
-                  >
+                  <span key={id} style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    padding: '4px 10px', borderRadius: 9999,
+                    fontSize: 12, fontWeight: 500,
+                    background: n.bg, color: n.color,
+                    border: `1px solid ${n.color}30`,
+                  }}>
                     {Icon && <Icon size={11} aria-hidden="true" />}
                     {n.label}
                   </span>
@@ -95,14 +112,14 @@ function IdCard({ card }) {
           <>
             <div className="id-card__divider" />
             <div className="note-block">
-              <Activity size={13} color="#b06000" style={{ flexShrink: 0, marginTop: 1 }} aria-hidden="true" />
-              <p style={{ fontSize: 13, color: '#78350f', lineHeight: 1.5 }}>{card.medicalNotes}</p>
+              <Activity size={13} color="#fdd663" style={{ flexShrink: 0, marginTop: 1 }} aria-hidden="true" />
+              <p style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.5 }}>{card.medicalNotes}</p>
             </div>
           </>
         )}
       </div>
 
-      {/* Footer */}
+      {/* ── Footer ── */}
       {(card.emergencyContact || card.phone) && (
         <div className="id-card__footer">
           <div>

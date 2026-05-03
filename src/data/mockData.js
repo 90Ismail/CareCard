@@ -1,13 +1,13 @@
 // icon field maps to lucide-react component names
 export const NEEDS = [
-  { id: 'power',         label: 'Power Dependent',    icon: 'Zap',         color: '#92400E', bg: '#FEF3C7' },
-  { id: 'refrigeration', label: 'Refrigeration',       icon: 'Thermometer', color: '#1E40AF', bg: '#DBEAFE' },
-  { id: 'mobility',      label: 'Mobility Aid',        icon: 'Move',        color: '#065F46', bg: '#D1FAE5' },
-  { id: 'oxygen',        label: 'Oxygen / Respiratory',icon: 'Wind',        color: '#9F1239', bg: '#FFE4E6' },
-  { id: 'vision',        label: 'Vision Impaired',     icon: 'Eye',         color: '#5B21B6', bg: '#EDE9FE' },
-  { id: 'hearing',       label: 'Hearing Impaired',    icon: 'Volume2',     color: '#92400E', bg: '#FEF3C7' },
-  { id: 'cognitive',     label: 'Cognitive Support',   icon: 'Activity',    color: '#1E40AF', bg: '#DBEAFE' },
-  { id: 'medical',       label: 'Medical Supervision', icon: 'HeartPulse',  color: '#9F1239', bg: '#FFE4E6' },
+  { id: 'power',         label: 'Power Dependent',     icon: 'Zap',         color: '#fcd34d', bg: 'rgba(252,211,77,0.1)'   },
+  { id: 'refrigeration', label: 'Refrigeration',        icon: 'Thermometer', color: '#60a5fa', bg: 'rgba(96,165,250,0.1)'  },
+  { id: 'mobility',      label: 'Mobility Aid',         icon: 'Move',        color: '#4ade80', bg: 'rgba(74,222,128,0.1)'  },
+  { id: 'oxygen',        label: 'Oxygen / Respiratory', icon: 'Wind',        color: '#f87171', bg: 'rgba(248,113,113,0.1)' },
+  { id: 'vision',        label: 'Vision Impaired',      icon: 'Eye',         color: '#c084fc', bg: 'rgba(192,132,252,0.1)' },
+  { id: 'hearing',       label: 'Hearing Impaired',     icon: 'Volume2',     color: '#fcd34d', bg: 'rgba(252,211,77,0.1)'  },
+  { id: 'cognitive',     label: 'Cognitive Support',    icon: 'Activity',    color: '#60a5fa', bg: 'rgba(96,165,250,0.1)'  },
+  { id: 'medical',       label: 'Medical Supervision',  icon: 'HeartPulse',  color: '#f87171', bg: 'rgba(248,113,113,0.1)' },
 ]
 
 const ago = (min) => new Date(Date.now() - min * 60000).toISOString()

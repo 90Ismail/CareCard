@@ -5,6 +5,9 @@ import {
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { NEEDS } from '../data/mockData'
+import MapView from '../components/MapView'
+import { AlertBanner, PersonAvatar } from '../components/CareCardBrand'
+import AITriage from '../components/AITriage'
 
 const ICON_MAP = { Zap, Thermometer, Move, Wind, Eye, Volume2, Activity, HeartPulse }
 
@@ -49,55 +52,64 @@ function BoardCard({ card, mode, onClaim, onUnclaim, onReach }) {
   const isClaimed = !!card.claimedBy
 
   return (
-    <div className="bcard">
+    <div className={`bcard bcard--${card.status}`}>
       <div className="bcard__main">
-        {/* Header */}
-        <div className="row sb gap-2" style={{ flexWrap: 'wrap', gap: 8 }}>
-          <div className="f1">
-            <div className="row gap-2 wrap">
-              <span style={{ fontSize: 15, fontWeight: 500 }}>{card.name}</span>
-              <span className={`badge ${sm.cls}`}>{sm.label}</span>
-              {card.reached && <span className="badge badge--accent">Reached</span>}
+        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+
+          {/* Avatar */}
+          <PersonAvatar name={card.name} status={card.status} size={38} />
+
+          {/* Content */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Header row */}
+            <div className="row sb gap-2" style={{ flexWrap: 'wrap', gap: 8 }}>
+              <div className="f1">
+                <div className="row gap-2 wrap">
+                  <span style={{ fontSize: 15, fontWeight: 600 }}>{card.name}</span>
+                  <span className={`badge ${sm.cls}`}>{sm.label}</span>
+                  {card.reached && <span className="badge badge--accent">Reached</span>}
+                </div>
+                <div className="row gap-1 mt-1">
+                  <MapPin10 />
+                  <span className="fs-12 tm">{card.address}</span>
+                </div>
+              </div>
+              <a href={`tel:${card.phone}`} className="btn btn--ghost btn--sm"
+                aria-label={`Call ${card.name}`}>
+                <Phone size={13} aria-hidden="true" />
+                <span className="fs-12">{card.phone}</span>
+              </a>
             </div>
+
+            {/* Needs */}
+            {card.needs.length > 0 && (
+              <div className="needs-wrap mt-2">
+                {card.needs.map(id => <NeedPill key={id} id={id} />)}
+              </div>
+            )}
+
+            {/* Notes */}
+            {card.medicalNotes && (
+              <div className="note-block mt-2">
+                <Activity size={12} color="#fdd663" style={{ flexShrink: 0, marginTop: 1 }} aria-hidden="true" />
+                <p style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.45 }}>{card.medicalNotes}</p>
+              </div>
+            )}
+
+            {/* Claimed */}
+            {isClaimed && (
+              <div className="claim-row">
+                <UserCheck size={12} aria-hidden="true" />
+                {isMine ? 'Claimed by you' : `Claimed by ${card.claimedBy.name}`}
+                <span className="t4">· {elapsed(card.claimedBy.time)}</span>
+              </div>
+            )}
+
             <div className="row gap-1 mt-1">
-              <MapPin10 />
-              <span className="fs-12 tm">{card.address}</span>
+              <Clock size={10} color="var(--text-4)" aria-hidden="true" />
+              <span className="fs-11 t4">Posted {elapsed(card.createdAt)}</span>
             </div>
           </div>
-          <a href={`tel:${card.phone}`} className="btn btn--ghost btn--sm"
-            aria-label={`Call ${card.name}`}>
-            <Phone size={13} aria-hidden="true" />
-            <span className="fs-12">{card.phone}</span>
-          </a>
-        </div>
-
-        {/* Needs */}
-        {card.needs.length > 0 && (
-          <div className="needs-wrap mt-2">
-            {card.needs.map(id => <NeedPill key={id} id={id} />)}
-          </div>
-        )}
-
-        {/* Notes */}
-        {card.medicalNotes && (
-          <div className="note-block mt-2">
-            <Activity size={12} color="#b06000" style={{ flexShrink: 0, marginTop: 1 }} aria-hidden="true" />
-            <p style={{ fontSize: 13, color: '#78350f', lineHeight: 1.45 }}>{card.medicalNotes}</p>
-          </div>
-        )}
-
-        {/* Claimed */}
-        {isClaimed && (
-          <div className="claim-row">
-            <UserCheck size={12} aria-hidden="true" />
-            {isMine ? 'Claimed by you' : `Claimed by ${card.claimedBy.name}`}
-            <span className="t4">· {elapsed(card.claimedBy.time)}</span>
-          </div>
-        )}
-
-        <div className="row gap-1 mt-1">
-          <Clock size={10} color="var(--text-4)" aria-hidden="true" />
-          <span className="fs-11 t4">Posted {elapsed(card.createdAt)}</span>
         </div>
       </div>
 
@@ -154,7 +166,7 @@ function MapPin10() {
 const ZONES = ['All', 'A', 'B', 'C', 'D']
 
 export default function Board({ mode }) {
-  const { cards, claimCard, unclaimCard, markReached } = useApp()
+  const { cards, claimCard, unclaimCard, markReached, myCard } = useApp()
   const [zone, setZone] = useState('All')
   const [needFilter, setNeedFilter] = useState(null)
   const [view, setView] = useState('all')
@@ -185,6 +197,8 @@ export default function Board({ mode }) {
 
   return (
     <div>
+      <AlertBanner />
+
       {/* Header */}
       <div className="board-top">
         <p className="board-top__label">
@@ -253,6 +267,22 @@ export default function Board({ mode }) {
             </button>
           )
         })}
+      </div>
+
+      {/* AI Triage — responder only */}
+      <AITriage cards={filtered} mode={mode} />
+
+      {/* Minimap */}
+      <div style={{ marginTop: 8 }}>
+        <p className="section-hd" style={{ padding: '0 16px 6px' }}>Live Map · Minneapolis</p>
+        <MapView
+          cards={filtered}
+          currentUser={myCard}
+          mode={mode}
+          onClaim={claimCard}
+          onUnclaim={unclaimCard}
+          onReach={markReached}
+        />
       </div>
 
       {/* Cards */}
