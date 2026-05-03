@@ -1,13 +1,13 @@
 // icon field maps to lucide-react component names
 export const NEEDS = [
-  { id: 'power',         label: 'Power Dependent',     icon: 'Zap',         color: '#fcd34d', bg: 'rgba(252,211,77,0.1)'   },
-  { id: 'refrigeration', label: 'Refrigeration',        icon: 'Thermometer', color: '#60a5fa', bg: 'rgba(96,165,250,0.1)'  },
-  { id: 'mobility',      label: 'Mobility Aid',         icon: 'Move',        color: '#4ade80', bg: 'rgba(74,222,128,0.1)'  },
-  { id: 'oxygen',        label: 'Oxygen / Respiratory', icon: 'Wind',        color: '#f87171', bg: 'rgba(248,113,113,0.1)' },
-  { id: 'vision',        label: 'Vision Impaired',      icon: 'Eye',         color: '#c084fc', bg: 'rgba(192,132,252,0.1)' },
-  { id: 'hearing',       label: 'Hearing Impaired',     icon: 'Volume2',     color: '#fcd34d', bg: 'rgba(252,211,77,0.1)'  },
-  { id: 'cognitive',     label: 'Cognitive Support',    icon: 'Activity',    color: '#60a5fa', bg: 'rgba(96,165,250,0.1)'  },
-  { id: 'medical',       label: 'Medical Supervision',  icon: 'HeartPulse',  color: '#f87171', bg: 'rgba(248,113,113,0.1)' },
+  { id: 'power',         label: 'Power Dependent',     icon: 'Zap',         color: '#d4aa3a', bg: 'rgba(212,170,58,.1)'   },
+  { id: 'refrigeration', label: 'Refrigeration',        icon: 'Thermometer', color: '#4a90d9', bg: 'rgba(74,144,217,.1)'   },
+  { id: 'mobility',      label: 'Mobility Aid',         icon: 'Move',        color: '#5fad7e', bg: 'rgba(95,173,126,.1)'   },
+  { id: 'oxygen',        label: 'Oxygen / Respiratory', icon: 'Wind',        color: '#e5736b', bg: 'rgba(229,115,107,.1)'  },
+  { id: 'vision',        label: 'Vision Impaired',      icon: 'Eye',         color: '#a78bbd', bg: 'rgba(167,139,189,.1)'  },
+  { id: 'hearing',       label: 'Hearing Impaired',     icon: 'Volume2',     color: '#d4aa3a', bg: 'rgba(212,170,58,.1)'   },
+  { id: 'cognitive',     label: 'Cognitive Support',    icon: 'Activity',    color: '#4a90d9', bg: 'rgba(74,144,217,.1)'   },
+  { id: 'medical',       label: 'Medical Supervision',  icon: 'HeartPulse',  color: '#e5736b', bg: 'rgba(229,115,107,.1)'  },
 ]
 
 const ago = (min) => new Date(Date.now() - min * 60000).toISOString()

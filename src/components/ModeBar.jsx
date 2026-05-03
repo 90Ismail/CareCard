@@ -2,9 +2,9 @@ import { User, Shield, Heart } from 'lucide-react'
 import { CareCardLogo } from './CareCardBrand'
 
 const STATUS_CFG = {
-  safe:        { label: 'Safe',       dot: '#81c995', text: '#81c995', bg: '#0d2b1a', border: '#1f4a2d' },
-  'need-help': { label: 'Needs Help', dot: '#f28b82', text: '#f28b82', bg: '#2d1111', border: '#4d2020' },
-  evacuating:  { label: 'Evacuating', dot: '#fdd663', text: '#fdd663', bg: '#2a2008', border: '#4a3a18' },
+  safe:        { label: 'Safe',       dot: '#5fad7e', text: '#5fad7e', bg: 'rgba(95,173,126,.1)',  border: 'rgba(95,173,126,.3)'  },
+  'need-help': { label: 'Needs Help', dot: '#e5736b', text: '#e5736b', bg: 'rgba(229,115,107,.1)', border: 'rgba(229,115,107,.3)' },
+  evacuating:  { label: 'Evacuating', dot: '#d4aa3a', text: '#d4aa3a', bg: 'rgba(212,170,58,.1)',  border: 'rgba(212,170,58,.3)'  },
 }
 
 const TABS = [

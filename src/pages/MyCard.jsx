@@ -11,9 +11,9 @@ import { CareCardLogo, PersonAvatar } from '../components/CareCardBrand'
 const ICON_MAP = { Zap, Thermometer, Move, Wind, Eye, Volume2, Activity, HeartPulse }
 
 const STATUS_OPTS = [
-  { id: 'safe',       label: "I'm Safe",   Icon: CheckCircle2, color: '#81c995', bg: '#0d2b1a', cls: 'active-safe'       },
-  { id: 'need-help',  label: 'Need Help',  Icon: AlertOctagon, color: '#f28b82', bg: '#2d1111', cls: 'active-need-help'  },
-  { id: 'evacuating', label: 'Evacuating', Icon: Navigation,   color: '#fdd663', bg: '#2a2008', cls: 'active-evacuating' },
+  { id: 'safe',       label: "I'm Safe",   Icon: CheckCircle2, color: '#5fad7e', bg: 'rgba(95,173,126,.12)',  cls: 'active-safe'       },
+  { id: 'need-help',  label: 'Need Help',  Icon: AlertOctagon, color: '#e5736b', bg: 'rgba(229,115,107,.12)', cls: 'active-need-help'  },
+  { id: 'evacuating', label: 'Evacuating', Icon: Navigation,   color: '#d4aa3a', bg: 'rgba(212,170,58,.12)',  cls: 'active-evacuating' },
 ]
 
 const STATUS_LABELS = { safe: 'Safe', 'need-help': 'Needs Help', evacuating: 'Evacuating' }
@@ -177,8 +177,8 @@ export default function MyCard() {
               onClick={() => updateStatus(id)}
               aria-pressed={myCard.status === id}
             >
-              <div className="status-card__icon" style={{ background: myCard.status === id ? bg : '#f8f9fa' }}>
-                <Icon size={18} color={myCard.status === id ? color : '#9aa0a6'} strokeWidth={2} aria-hidden="true" />
+              <div className="status-card__icon" style={{ background: myCard.status === id ? bg : 'var(--surface-2)' }}>
+                <Icon size={18} color={myCard.status === id ? color : 'var(--text-3)'} strokeWidth={2} aria-hidden="true" />
               </div>
               <span className="status-card__label" style={{ color: myCard.status === id ? color : undefined }}>
                 {label}

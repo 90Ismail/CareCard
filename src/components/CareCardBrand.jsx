@@ -53,9 +53,9 @@ export function AlertBanner() {
 
 /* ── Person avatar with status ring ─────────────────────────── */
 const AVATAR_STATUS = {
-  'need-help': { color: '#f28b82', bg: 'rgba(242,139,130,0.12)', border: 'rgba(242,139,130,0.35)' },
-  evacuating:  { color: '#fdd663', bg: 'rgba(253,214,99,0.12)',  border: 'rgba(253,214,99,0.35)'  },
-  safe:        { color: '#81c995', bg: 'rgba(129,201,149,0.12)', border: 'rgba(129,201,149,0.35)' },
+  'need-help': { color: '#e5736b', bg: 'rgba(229,115,107,.1)', border: 'rgba(229,115,107,.3)' },
+  evacuating:  { color: '#d4aa3a', bg: 'rgba(212,170,58,.1)',  border: 'rgba(212,170,58,.3)'  },
+  safe:        { color: '#5fad7e', bg: 'rgba(95,173,126,.1)',  border: 'rgba(95,173,126,.3)'  },
 }
 
 export function PersonAvatar({ name, status, size = 38 }) {
@@ -77,7 +77,7 @@ export function PersonAvatar({ name, status, size = 38 }) {
         color: sc.color,
         letterSpacing: '.02em',
         flexShrink: 0,
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Roboto, system-ui, sans-serif',
       }}
     >
       {initials}

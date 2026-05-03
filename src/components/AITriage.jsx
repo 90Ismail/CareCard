@@ -68,7 +68,7 @@ export default function AITriage({ cards, mode }) {
       {/* Header toggle */}
       <button className="ai-triage__header" onClick={() => setOpen(o => !o)}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Sparkles size={14} color="#818cf8" aria-hidden="true" />
+          <Sparkles size={14} color="#fdd663" aria-hidden="true" />
           <span className="ai-triage__title">AI Triage Analysis</span>
           <span className="ai-triage__badge">{activeCards.length} active</span>
         </div>
