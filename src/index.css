@@ -48,6 +48,109 @@ a { color: inherit; text-decoration: none; }
 button { font-family: var(--font); cursor: pointer; border: none; background: none; }
 input, textarea, select { font-family: var(--font); }
 
+/* ── Phone frame (desktop) ──────────────────────────────────── */
+.phone-frame {
+  display: contents;
+}
+.phone-bezel {
+  display: contents;
+}
+.phone-island {
+  display: none;
+}
+.phone-screen {
+  display: contents;
+}
+
+@media (min-width: 540px) {
+  body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 24px 64px;
+    background: #050506;
+  }
+
+  .phone-frame {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .phone-bezel {
+    display: block;
+    position: relative;
+    width: 408px;
+    background: #1c1c1e;
+    border-radius: 52px;
+    padding: 12px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.08),
+      0 40px 100px rgba(0,0,0,.65),
+      inset 0 1px 0 rgba(255,255,255,.06);
+  }
+
+  /* Volume buttons */
+  .phone-bezel::before {
+    content: '';
+    position: absolute;
+    left: -2.5px;
+    top: 120px;
+    width: 2.5px;
+    height: 32px;
+    background: #2a2a2c;
+    border-radius: 2px 0 0 2px;
+    box-shadow: 0 48px 0 0 #2a2a2c, 0 88px 0 0 #2a2a2c;
+  }
+
+  /* Power button */
+  .phone-bezel::after {
+    content: '';
+    position: absolute;
+    right: -2.5px;
+    top: 155px;
+    width: 2.5px;
+    height: 56px;
+    background: #2a2a2c;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .phone-island {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    width: 100%;
+    height: 0;
+  }
+  .phone-island::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 32px;
+    background: #000;
+    border-radius: 20px;
+    z-index: 999;
+  }
+
+  .phone-screen {
+    display: block;
+    position: relative;
+    background: var(--bg);
+    border-radius: 42px;
+    overflow: hidden;
+    overflow-y: auto;
+    height: 82vh;
+    max-height: 860px;
+    min-height: 600px;
+    scrollbar-width: none;
+  }
+  .phone-screen::-webkit-scrollbar { display: none; }
+
+}
+
 /* ── Shell ──────────────────────────────────────────────────── */
 .app-shell {
   max-width: 480px;
@@ -716,4 +819,24 @@ textarea.input { min-height: 80px; resize: vertical; padding-top: 10px; }
 .bcard--need-help  { border-left: 3px solid var(--danger);  }
 .bcard--evacuating { border-left: 3px solid var(--warning); }
 .bcard--safe       { border-left: 3px solid rgba(95,173,126,.3); }
+
+/* ── Desktop phone‑frame overrides (must come last) ────────── */
+@media (min-width: 540px) {
+  .app-shell {
+    min-height: auto;
+    max-width: none;
+  }
+  .modebar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+  }
+  .page-content {
+    padding-top: 0;
+  }
+}
 

@@ -9,11 +9,18 @@ function Shell() {
   const { myCard } = useApp()
 
   return (
-    <div className="app-shell">
-      <ModeBar mode={mode} setMode={setMode} userStatus={myCard.status} />
-      <main className="page-content">
-        {mode === 'user' ? <MyCard /> : <Board mode={mode} />}
-      </main>
+    <div className="phone-frame">
+      <div className="phone-bezel">
+        <div className="phone-island" />
+        <div className="phone-screen">
+          <div className="app-shell">
+            <ModeBar mode={mode} setMode={setMode} userStatus={myCard.status} />
+            <main className="page-content">
+              {mode === 'user' ? <MyCard /> : <Board mode={mode} />}
+            </main>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
